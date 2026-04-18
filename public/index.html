@@ -782,12 +782,17 @@ async function doLogin() {
 }
 
 async function doRegister() {
+  const username = document.getElementById('m-user').value;
+  const email    = document.getElementById('m-email').value;
+  const pass     = document.getElementById('m-pass').value;
   try {
-    const res = await api('POST', '/api/auth/register', { username: document.getElementById('m-user').value, email: document.getElementById('m-email').value, password: document.getElementById('m-pass').value });
+    const res = await api('POST', '/api/auth/register', { username, email, password: pass });
     token = res.token; localStorage.setItem('flirt_token', token);
     me = await api('GET', '/api/auth/me');
     setLoggedIn(); closeModal(); showPage('dashboard');
-  } catch(e) { showModalErr(e.message); }
+  } catch(e) {
+    alert(e.message);
+  }
 }
 
 async function logout() {
