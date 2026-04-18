@@ -1,20 +1,18 @@
-const webpush = require('web-push');
-const db       = require('../db');
+const db = require('../db');
 
-// VAPID-nøgler genereres én gang og gemmes i miljøvariabler.
-// Kør: node -e "const wp=require('web-push'); console.log(wp.generateVAPIDKeys())"
-webpush.setVapidDetails(
-  `mailto:${process.env.SMTP_USER || 'admin@flirtdk.dk'}`,
-  process.env.VAPID_PUBLIC  || '',
-  process.env.VAPID_PRIVATE || ''
-);
+let webpush = null;
+if (process.env.VAPID_PUBLIC && process.env.VAPID_PRIVATE) {
+  webpush = require('web-push');
+  webpush.setVapidDetails(
+    `mailto:admin@flirtdk.dk`,
+    process.env.VAPID_PUBLIC,
+    process.env.VAPID_PRIVATE
+  );
+}
 
-// ── Send push til én bruger ─────────────────────────────────────────────────
 async function pushToUser(userId, payload) {
-  const subs = db.prepare(
-    'SELECT * FROM push_subscriptions WHERE user_id = ?'
-  ).all(userId);
-
+  if (!webpush) return;
+  const subs = db.prepare('SELECT * FROM push_subscriptions WHERE user_id = ?').all(userId);
   for (const sub of subs) {
     try {
       await webpush.sendNotification(
@@ -22,41 +20,21 @@ async function pushToUser(userId, payload) {
         JSON.stringify(payload)
       );
     } catch (err) {
-      // Fjern ugyldige subscriptions (bruger har slået notifikationer fra)
       if (err.statusCode === 404 || err.statusCode === 410) {
-        db.prepare('DELETE FROM push_subscriptions WHERE endpoint = ?')
-          .run(sub.endpoint);
+        db.prepare('DELETE FROM push_subscriptions WHERE endpoint = ?').run(sub.endpoint);
       }
     }
   }
 }
 
-// ── Notifikations-typer ──────────────────────────────────────────────────────
 function notifyNewMessage(toUserId, fromName) {
-  return pushToUser(toUserId, {
-    title: `Ny besked fra ${fromName} 💬`,
-    body:  'Klik for at læse og svare',
-    icon:  '/icon-192.png',
-    url:   '/messages',
-  });
+  return pushToUser(toUserId, { title: `Ny besked fra ${fromName} 💬`, body: 'Klik for at læse', url: '/messages' });
 }
-
 function notifyLike(toUserId, fromName) {
-  return pushToUser(toUserId, {
-    title: `${fromName} har liket dig ❤️`,
-    body:  'Se profilen og skriv tilbage',
-    icon:  '/icon-192.png',
-    url:   '/',
-  });
+  return pushToUser(toUserId, { title: `${fromName} har liket dig ❤️`, body: 'Se profilen', url: '/' });
 }
-
 function notifyMatch(toUserId, fromName) {
-  return pushToUser(toUserId, {
-    title: `🎉 Match med ${fromName}!`,
-    body:  'I kan nu skrive frit til hinanden',
-    icon:  '/icon-192.png',
-    url:   '/messages',
-  });
+  return pushToUser(toUserId, { title: `🎉 Match med ${fromName}!`, body: 'Skriv til hinanden', url: '/messages' });
 }
 
 module.exports = { pushToUser, notifyNewMessage, notifyLike, notifyMatch };
