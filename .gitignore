@@ -1,0 +1,6 @@
+node_modules/
+.env
+flirtdk.db
+public/uploads/
+*.db-shm
+*.db-wal
