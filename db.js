@@ -59,6 +59,13 @@ db.exec(`
     auth       TEXT    NOT NULL,
     created_at TEXT    DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS profile_visits (
+    visitor_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    visited_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    visited_at  TEXT    DEFAULT (datetime('now')),
+    PRIMARY KEY (visitor_id, visited_id)
+  );
 `);
 
 module.exports = db;

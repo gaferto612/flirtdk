@@ -2,9 +2,20 @@ const router      = require('express').Router();
 const multer      = require('multer');
 const path        = require('path');
 const fs          = require('fs');
+const jwt         = require('jsonwebtoken');
 const db          = require('../db');
 const requireAuth = require('../middleware/auth');
 const { notifyLike, notifyMatch } = require('../services/push');
+
+const SECRET = process.env.JWT_SECRET || 'skift-dette-til-noget-hemmeligt';
+
+function optionalUser(req) {
+  try {
+    const h = req.headers.authorization;
+    if (h && h.startsWith('Bearer ')) return jwt.verify(h.slice(7), SECRET);
+  } catch {}
+  return null;
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -43,9 +54,25 @@ router.get('/online', (req, res) => {
   return res.json(db.prepare('SELECT p.user_id, p.display_name, p.age, p.city, p.photo, p.is_online FROM profiles p WHERE p.is_online = 1 LIMIT 50').all());
 });
 
+router.get('/my-visitors', requireAuth, (req, res) => {
+  const visitors = db.prepare(`
+    SELECT pv.visitor_id, pv.visited_at,
+           p.display_name, p.photo, p.age, p.city, p.is_online
+    FROM profile_visits pv
+    JOIN profiles p ON p.user_id = pv.visitor_id
+    WHERE pv.visited_id = ?
+    ORDER BY pv.visited_at DESC LIMIT 30
+  `).all(req.user.id);
+  return res.json(visitors);
+});
+
 router.get('/:id', (req, res) => {
   const p = db.prepare('SELECT p.*, u.username, u.premium FROM profiles p JOIN users u ON u.id = p.user_id WHERE p.user_id = ?').get(req.params.id);
   if (!p) return res.status(404).json({ error: 'Profil ikke fundet' });
+  const visitor = optionalUser(req);
+  if (visitor && visitor.id !== parseInt(req.params.id)) {
+    db.prepare(`INSERT OR REPLACE INTO profile_visits (visitor_id, visited_id, visited_at) VALUES (?, ?, datetime('now'))`).run(visitor.id, parseInt(req.params.id));
+  }
   return res.json(p);
 });
 
