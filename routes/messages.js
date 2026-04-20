@@ -5,6 +5,11 @@ const { notifyNewMessage } = require('../services/push');
 
 router.use(requireAuth);
 
+router.get('/unread/count', (req, res) => {
+  const row = db.prepare('SELECT COUNT(*) as n FROM messages WHERE to_user = ? AND read = 0').get(req.user.id);
+  return res.json({ count: row.n });
+});
+
 router.get('/inbox', (req, res) => {
   const threads = db.prepare(`
     SELECT
@@ -44,11 +49,6 @@ router.post('/:userId', async (req, res) => {
   const sender = db.prepare('SELECT display_name FROM profiles WHERE user_id = ?').get(req.user.id);
   notifyNewMessage(to, sender?.display_name || 'En bruger').catch(() => {});
   return res.status(201).json({ id: result.lastInsertRowid, from_user: req.user.id, to_user: to, body, created_at: new Date().toISOString() });
-});
-
-router.get('/unread/count', (req, res) => {
-  const row = db.prepare('SELECT COUNT(*) as n FROM messages WHERE to_user = ? AND read = 0').get(req.user.id);
-  return res.json({ count: row.n });
 });
 
 module.exports = router;

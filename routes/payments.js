@@ -135,7 +135,7 @@ router.post('/webhook', (req, res) => {
 router.get('/status', requireAuth, (req, res) => {
   const user = db.prepare('SELECT premium, premium_until FROM users WHERE id = ?')
     .get(req.user.id);
-  const active = user.premium === 1 && (!user.premium_until || new Date(user.premium_until) > new Date());
+  const active = user.premium === 1 && user.premium_until != null && new Date(user.premium_until) > new Date();
   return res.json({ premium: active, until: user.premium_until });
 });
 
