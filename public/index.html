@@ -300,6 +300,96 @@ footer{border-top:1px solid var(--border);padding:3rem 2rem 2rem;background:var(
 .msg-ok,.msg-err{padding:9px 13px;border-radius:9px;font-size:.83rem;margin-top:10px;display:none}
 .msg-ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#86efac}
 .msg-err{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.25);color:#fca5a5}
+
+/* ═══════════════════════════════════
+   SWIPE PAGE
+═══════════════════════════════════ */
+.swipe-page{padding:1rem 1rem .5rem;max-width:420px;margin:0 auto}
+.swipe-stack{position:relative;height:500px;user-select:none;touch-action:none}
+.swipe-card{position:absolute;inset:0;border-radius:22px;overflow:hidden;cursor:grab;box-shadow:0 12px 40px rgba(0,0,0,.6);transform-origin:50% 110%}
+.swipe-card:active{cursor:grabbing}
+.swipe-card-photo{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.swipe-card-av{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:7rem;pointer-events:none}
+.swipe-card-info{position:absolute;bottom:0;left:0;right:0;padding:4rem 1.5rem 1.5rem;background:linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.4) 60%,transparent 100%);pointer-events:none}
+.swipe-card-name{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;line-height:1.1}
+.swipe-card-meta{color:rgba(255,255,255,.7);font-size:.92rem;margin-top:5px}
+.swipe-hint{position:absolute;top:1.4rem;padding:6px 16px;border-radius:10px;font-size:1.1rem;font-weight:800;letter-spacing:.1em;opacity:0;transition:opacity .12s;pointer-events:none;border:3px solid;text-transform:uppercase;backdrop-filter:blur(4px)}
+.swipe-hint.nope{right:1.4rem;color:#E74C3C;border-color:#E74C3C;background:rgba(231,76,60,.1);transform:rotate(6deg)}
+.swipe-hint.like{left:1.4rem;color:#22C55E;border-color:#22C55E;background:rgba(34,197,94,.1);transform:rotate(-6deg)}
+.swipe-btns{display:flex;justify-content:center;gap:1.4rem;margin-top:1.4rem;align-items:center}
+.swb{width:60px;height:60px;border-radius:50%;border:2px solid;background:var(--dark3);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.swb.nope{border-color:rgba(231,76,60,.4);color:#E74C3C}
+.swb.nope:hover,.swb.nope:active{background:rgba(231,76,60,.15);transform:scale(1.1)}
+.swb.like{width:70px;height:70px;font-size:1.7rem;border-color:rgba(34,197,94,.5);color:#22C55E;box-shadow:0 4px 20px rgba(34,197,94,.15)}
+.swb.like:hover,.swb.like:active{background:rgba(34,197,94,.15);transform:scale(1.1)}
+.swb.chat{border-color:rgba(192,57,43,.4);color:var(--red2)}
+.swb.chat:hover,.swb.chat:active{background:var(--red-soft);transform:scale(1.1)}
+.swipe-counter{text-align:center;color:var(--muted);font-size:.78rem;margin-top:.6rem}
+
+/* ═══════════════════════════════════
+   MOBILE BOTTOM NAV + RESPONSIVE
+═══════════════════════════════════ */
+.mob-nav{display:none}
+@media(max-width:640px){
+  body{padding-bottom:60px}
+  nav{display:none}
+  .header-right .btn-ghost{display:none}
+  header{padding:0 1rem;height:56px}
+  .hero{padding:3rem 1rem 2rem;min-height:auto}
+  .hero h1{font-size:clamp(1.9rem,9vw,3rem)}
+  .hero-sub{font-size:.93rem}
+  .hero-ctas .btn-lg{padding:12px 20px;font-size:.9rem}
+  .hero-trust{flex-wrap:wrap;gap:.6rem .8rem;font-size:.77rem;justify-content:center}
+  .hero-trust-dot{display:none}
+  .search-wrap{padding:0 .8rem}
+  .search-bar{grid-template-columns:1fr 1fr;gap:8px;padding:1rem 1rem}
+  .search-bar .sf:nth-child(3){grid-column:1/-1}
+  .search-bar .search-btn{grid-column:1/-1}
+  .stats-row{display:grid;grid-template-columns:1fr 1fr}
+  .stat-item{max-width:none;border-right:none;border-bottom:1px solid var(--border)}
+  .stat-item:nth-child(1),.stat-item:nth-child(3){border-right:1px solid var(--border)}
+  .stat-item:nth-child(3),.stat-item:nth-child(4){border-bottom:none}
+  .stat-num{font-size:1.5rem}
+  .profiles-section{padding:0 .8rem 3rem}
+  .hiw{padding:2.5rem 1rem}
+  .promo{flex-direction:column;padding:1.8rem 1.2rem;margin:0 .8rem 3rem}
+  .promo-actions{width:100%}
+  .promo-actions .btn{width:100%;justify-content:center}
+  .promo-text h2{font-size:1.4rem}
+  .testimonials{padding:0 1rem 3rem}
+  .browse-wrap{padding:1rem}
+  .browse-header{flex-direction:column;align-items:flex-start;gap:.7rem;margin-bottom:1rem}
+  .browse-header h1{font-size:1.5rem}
+  .filter-bar{width:100%;gap:6px}
+  .filter-input{flex:1;min-width:0}
+  .filter-check{padding:9px 10px;font-size:.82rem}
+  .msg-wrap{padding:1rem}
+  .msg-wrap h1{font-size:1.5rem;margin-bottom:1rem}
+  .thread{padding:10px 12px}
+  .chat-page{height:calc(100vh - 56px - 60px)}
+  .chat-topbar{padding:.75rem 1rem}
+  .chat-msgs{padding:.8rem 1rem}
+  .chat-footer{padding:.75rem 1rem;gap:8px}
+  .chat-send{padding:12px 16px;font-size:.85rem}
+  .dash{padding:1rem}
+  .dash-head h1{font-size:1.5rem}
+  .dtab{padding:8px 10px;font-size:.78rem}
+  .dcard{padding:1.4rem;max-width:100%}
+  .row2{grid-template-columns:1fr}
+  .plans-row{grid-template-columns:1fr}
+  .mbox{padding:1.8rem 1.4rem;border-radius:20px 20px 0 0;position:fixed;bottom:0;left:0;right:0;max-width:100%;width:100%;max-height:90vh;border-left:none;border-right:none;border-bottom:none}
+  .mo.open{align-items:flex-end}
+  footer{padding:2rem 1rem 1.5rem}
+  .footer-top{grid-template-columns:1fr 1fr;gap:1.5rem}
+  .footer-brand{grid-column:1/-1}
+  .footer-bottom{flex-direction:column;text-align:center;gap:.4rem}
+  #alerts{right:.75rem;left:.75rem;max-width:none}
+  .mob-nav{display:flex;position:fixed;bottom:0;left:0;right:0;height:60px;background:rgba(12,8,8,.97);border-top:1px solid var(--border);z-index:100;align-items:stretch;justify-content:space-around;backdrop-filter:blur(20px)}
+  .mnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);font-size:.58rem;font-weight:600;gap:2px;cursor:pointer;padding:6px 2px;transition:color .2s;-webkit-tap-highlight-color:transparent;border:none;background:none}
+  .mnav-item.active,.mnav-item:active{color:var(--red2)}
+  .mnav-icon{font-size:1.3rem;line-height:1;position:relative}
+  .mnav-badge{position:absolute;top:-3px;right:-7px;background:var(--red);color:#fff;border-radius:50px;min-width:15px;height:15px;display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:700;padding:0 3px}
+}
 </style>
 </head>
 <body>
@@ -445,6 +535,21 @@ footer{border-top:1px solid var(--border);padding:3rem 2rem 2rem;background:var(
   </footer>
 </div>
 
+<!-- ════ SWIPE ════ -->
+<div class="page" id="page-swipe">
+  <div class="swipe-page">
+    <div class="swipe-stack" id="swipe-stack">
+      <div class="spin-wrap"><div class="spin"></div></div>
+    </div>
+    <div class="swipe-btns">
+      <button class="swb nope" onclick="swipeBtn('left')" title="Spring over">✕</button>
+      <button class="swb chat" onclick="swipeMsgCurrent()" title="Skriv besked">✉</button>
+      <button class="swb like" onclick="swipeBtn('right')" title="Like">♥</button>
+    </div>
+    <div class="swipe-counter" id="swipe-counter"></div>
+  </div>
+</div>
+
 <!-- ════ BROWSE ════ -->
 <div class="page" id="page-browse">
   <div class="browse-wrap">
@@ -560,6 +665,25 @@ footer{border-top:1px solid var(--border);padding:3rem 2rem 2rem;background:var(
   </div>
 </div>
 
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mob-nav" id="mob-nav">
+  <button class="mnav-item active" id="mnav-home" onclick="goPage('home')">
+    <span class="mnav-icon">🏠</span><span>Hjem</span>
+  </button>
+  <button class="mnav-item" id="mnav-swipe" onclick="needLogin('swipe')">
+    <span class="mnav-icon">🔥</span><span>Swipe</span>
+  </button>
+  <button class="mnav-item" id="mnav-browse" onclick="needLogin('browse')">
+    <span class="mnav-icon">🔍</span><span>Søg</span>
+  </button>
+  <button class="mnav-item" id="mnav-messages" onclick="needLogin('messages')">
+    <span class="mnav-icon" style="position:relative;">✉<span class="mnav-badge" id="mob-badge" style="display:none;"></span></span><span>Beskeder</span>
+  </button>
+  <button class="mnav-item" id="mnav-profile" onclick="needLogin('dashboard')">
+    <span class="mnav-icon">👤</span><span>Profil</span>
+  </button>
+</nav>
+
 <!-- MODAL -->
 <div class="mo" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="mbox"><button class="mclose" onclick="closeModal()">✕</button><div id="mbody"></div></div>
@@ -620,10 +744,14 @@ function goHome(){goPage('home');}
 function goPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
-  document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
-  const m={'home':'nav-home','browse':'nav-browse','messages':'nav-msg'};
-  if(m[name])document.getElementById(m[name]).classList.add('active');
+  document.querySelectorAll('#main-nav a').forEach(a=>a.classList.remove('active'));
+  const desktopMap={'home':'nav-home','browse':'nav-browse','messages':'nav-msg'};
+  if(desktopMap[name])document.getElementById(desktopMap[name]).classList.add('active');
+  const mobMap={'home':'mnav-home','swipe':'mnav-swipe','browse':'mnav-browse','messages':'mnav-messages','dashboard':'mnav-profile'};
+  document.querySelectorAll('.mnav-item').forEach(b=>b.classList.remove('active'));
+  if(mobMap[name]){const mb=document.getElementById(mobMap[name]);if(mb)mb.classList.add('active');}
   if(name==='home')loadHome();
+  if(name==='swipe')loadSwipe();
   if(name==='browse')loadBrowse();
   if(name==='messages'){showInbox();loadInbox();}
   if(name==='dashboard')loadDash();
@@ -774,8 +902,131 @@ async function sendMsg(){
 }
 
 async function pollBadge(){
-  try{const{count}=await req('GET','/api/messages/unread/count');const b=document.getElementById('badge');if(count>0){b.textContent=count;b.style.display='';}else b.style.display='none';}catch{}
+  try{
+    const{count}=await req('GET','/api/messages/unread/count');
+    const b=document.getElementById('badge');
+    const mb=document.getElementById('mob-badge');
+    if(count>0){
+      if(b){b.textContent=count;b.style.display='';}
+      if(mb){mb.textContent=count;mb.style.display='';}
+    }else{
+      if(b)b.style.display='none';
+      if(mb)mb.style.display='none';
+    }
+  }catch{}
   setTimeout(pollBadge,15000);
+}
+
+// ── SWIPE ─────────────────────────────────────────────────────────────────
+let swipeProfiles=[],swipeIdx=0,swipeDragging=false,swipeDx=0,swipeCard=null,swipeCleanup=null;
+
+async function loadSwipe(){
+  swipeProfiles=[];swipeIdx=0;
+  document.getElementById('swipe-stack').innerHTML='<div class="spin-wrap"><div class="spin"></div></div>';
+  document.getElementById('swipe-counter').textContent='';
+  try{
+    const r=await req('GET','/api/profiles?limit=30');
+    swipeProfiles=r.profiles.filter(p=>!me||p.user_id!==me.id);
+    renderSwipeStack();
+  }catch(e){document.getElementById('swipe-stack').innerHTML='<div class="empty-state" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;"><h3>Kunne ikke hente profiler</h3></div>';}
+}
+
+function renderSwipeStack(){
+  if(swipeCleanup){swipeCleanup();swipeCleanup=null;}
+  const stack=document.getElementById('swipe-stack');
+  const remaining=swipeProfiles.length-swipeIdx;
+  const ctr=document.getElementById('swipe-counter');
+  if(remaining<=0){
+    stack.innerHTML='<div class="empty-state" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;"><h3>Ingen flere profiler</h3><p>Kom tilbage igen om lidt!</p></div>';
+    ctr.textContent='';return;
+  }
+  ctr.textContent=remaining+' profil'+(remaining===1?'':'er')+' tilbage';
+  const visible=swipeProfiles.slice(swipeIdx,swipeIdx+3);
+  stack.innerHTML=visible.map((p,i)=>{
+    const bg=['#1A0A1A','#0A1A1A','#1A1A0A'][p.user_id%3];
+    const photo=p.photo?`<img class="swipe-card-photo" src="${API}${p.photo}" alt="" draggable="false">`:`<div class="swipe-card-av" style="background:${bg};">${avatars[Math.abs(p.user_id*7)%avatars.length]}</div>`;
+    const rot=i===1?2:i===2?-2:0;const scale=i===0?1:i===1?0.96:0.92;
+    return `<div class="swipe-card" data-uid="${p.user_id}" data-name="${(p.display_name||'Anonym').replace(/"/g,'&quot;')}" style="z-index:${10-i};transform:rotate(${rot}deg) scale(${scale});${i>0?'pointer-events:none;':''}">
+      ${photo}
+      ${i===0?'<div class="swipe-hint nope" id="sh-nope">NÆSTE</div><div class="swipe-hint like" id="sh-like">LIKE ♥</div>':''}
+      <div class="swipe-card-info">
+        ${p.is_online?'<span style="background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.4);color:#4ade80;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:50px;display:inline-block;margin-bottom:.5rem;">● Online</span>':''}
+        <div class="swipe-card-name">${p.display_name||'Anonym'}${p.age?', '+p.age:''}</div>
+        <div class="swipe-card-meta">${p.city||''}</div>
+      </div>
+    </div>`;
+  }).reverse().join('');
+  initSwipeGesture();
+}
+
+function initSwipeGesture(){
+  const cards=document.querySelectorAll('.swipe-card');
+  swipeCard=null;
+  for(const c of cards){if(getComputedStyle(c).zIndex==='10'){swipeCard=c;break;}}
+  if(!swipeCard)return;
+  let sx=0,sy=0,dx=0,dy=0,active=false;
+  function onStart(e){
+    active=true;swipeDragging=true;
+    const pt=e.touches?e.touches[0]:e;
+    sx=pt.clientX;sy=pt.clientY;dx=0;dy=0;
+    swipeCard.style.transition='none';
+  }
+  function onMove(e){
+    if(!active)return;
+    if(e.cancelable)e.preventDefault();
+    const pt=e.touches?e.touches[0]:e;
+    dx=pt.clientX-sx;dy=pt.clientY-sy;
+    const rot=dx*0.08;
+    swipeCard.style.transform=`translateX(${dx}px) translateY(${dy*0.25}px) rotate(${rot}deg) scale(1)`;
+    const ratio=Math.min(Math.abs(dx)/90,1);
+    const hn=document.getElementById('sh-nope'),hl=document.getElementById('sh-like');
+    if(hn)hn.style.opacity=dx<0?ratio:0;
+    if(hl)hl.style.opacity=dx>0?ratio:0;
+  }
+  function onEnd(){
+    if(!active)return;active=false;swipeDragging=false;
+    swipeCard.style.transition='transform .3s cubic-bezier(.25,.46,.45,.94)';
+    if(Math.abs(dx)>85){
+      const dir=dx>0?'right':'left';
+      const vx=(dx>0?1:-1)*window.innerWidth*1.6;
+      swipeCard.style.transform=`translateX(${vx}px) rotate(${dx*0.12}deg) scale(1)`;
+      setTimeout(()=>commitSwipe(dir),320);
+    }else{
+      swipeCard.style.transform='translateX(0) rotate(0) scale(1)';
+      const hn=document.getElementById('sh-nope'),hl=document.getElementById('sh-like');
+      if(hn)hn.style.opacity=0;if(hl)hl.style.opacity=0;
+    }
+    dx=0;dy=0;
+  }
+  swipeCard.addEventListener('touchstart',onStart,{passive:true});
+  swipeCard.addEventListener('touchmove',onMove,{passive:false});
+  swipeCard.addEventListener('touchend',onEnd);
+  swipeCard.addEventListener('mousedown',onStart);
+  const mmove=e=>onMove(e),mup=()=>onEnd();
+  window.addEventListener('mousemove',mmove);
+  window.addEventListener('mouseup',mup);
+  swipeCleanup=()=>{window.removeEventListener('mousemove',mmove);window.removeEventListener('mouseup',mup);};
+}
+
+async function commitSwipe(dir){
+  const p=swipeProfiles[swipeIdx];swipeIdx++;
+  if(dir==='right'&&p){
+    try{const r=await req('POST',`/api/profiles/${p.user_id}/like`);if(r.match)toast('s',`🎉 Match med ${p.display_name||'nogen'}! Skriv nu.`);}catch{}
+  }
+  renderSwipeStack();
+}
+
+function swipeBtn(dir){
+  if(!swipeCard)return;
+  swipeCard.style.transition='transform .3s cubic-bezier(.25,.46,.45,.94)';
+  const vx=(dir==='right'?1:-1)*window.innerWidth*1.6;
+  swipeCard.style.transform=`translateX(${vx}px) rotate(${dir==='right'?20:-20}deg) scale(1)`;
+  setTimeout(()=>commitSwipe(dir),320);
+}
+
+function swipeMsgCurrent(){
+  const p=swipeProfiles[swipeIdx];
+  if(p)startChat(p.user_id,p.display_name||'Anonym');
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────
