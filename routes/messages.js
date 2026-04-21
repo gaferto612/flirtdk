@@ -11,17 +11,28 @@ router.get('/unread/count', (req, res) => {
 });
 
 router.get('/inbox', (req, res) => {
+  const uid = req.user.id;
   const threads = db.prepare(`
     SELECT
-      CASE WHEN m.from_user = ? THEN m.to_user ELSE m.from_user END AS other_user,
+      u.other_user,
       p.display_name, p.photo, p.is_online,
-      m.body AS last_message, m.created_at,
-      SUM(CASE WHEN m.to_user = ? AND m.read = 0 THEN 1 ELSE 0 END) AS unread
-    FROM messages m
-    JOIN profiles p ON p.user_id = CASE WHEN m.from_user = ? THEN m.to_user ELSE m.from_user END
-    WHERE m.from_user = ? OR m.to_user = ?
-    GROUP BY other_user ORDER BY m.created_at DESC
-  `).all(req.user.id, req.user.id, req.user.id, req.user.id, req.user.id);
+      (SELECT body FROM messages m2
+       WHERE (m2.from_user = u.other_user AND m2.to_user = ?)
+          OR (m2.from_user = ? AND m2.to_user = u.other_user)
+       ORDER BY m2.created_at DESC, m2.id DESC LIMIT 1) AS last_message,
+      (SELECT created_at FROM messages m2
+       WHERE (m2.from_user = u.other_user AND m2.to_user = ?)
+          OR (m2.from_user = ? AND m2.to_user = u.other_user)
+       ORDER BY m2.created_at DESC, m2.id DESC LIMIT 1) AS created_at,
+      (SELECT COUNT(*) FROM messages m2
+       WHERE m2.from_user = u.other_user AND m2.to_user = ? AND m2.read = 0) AS unread
+    FROM (
+      SELECT DISTINCT CASE WHEN from_user = ? THEN to_user ELSE from_user END AS other_user
+      FROM messages WHERE from_user = ? OR to_user = ?
+    ) u
+    JOIN profiles p ON p.user_id = u.other_user
+    ORDER BY created_at DESC
+  `).all(uid, uid, uid, uid, uid, uid, uid, uid);
   return res.json(threads);
 });
 
