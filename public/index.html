@@ -283,7 +283,8 @@ footer{border-top:1px solid var(--border);padding:3rem 2rem 2rem;background:var(
 .mdivider::before,.mdivider::after{content:'';flex:1;height:1px;background:var(--border)}
 
 /* ALERTS */
-#alerts{position:fixed;top:80px;right:1.5rem;z-index:300;display:flex;flex-direction:column;gap:8px;max-width:360px}
+#alerts{position:fixed;top:72px;right:1.5rem;z-index:300;display:flex;flex-direction:column;gap:8px;max-width:360px;pointer-events:none}
+.alert{pointer-events:all}
 .alert{padding:12px 16px;border-radius:12px;font-size:.85rem;display:flex;align-items:flex-start;gap:10px;animation:slideIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 @keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
 .alert-s{background:#0f2a1a;border:1px solid rgba(34,197,94,.3);color:#86efac}
@@ -428,7 +429,7 @@ footer{border-top:1px solid var(--border);padding:3rem 2rem 2rem;background:var(
   .footer-top{grid-template-columns:1fr 1fr;gap:1.5rem}
   .footer-brand{grid-column:1/-1}
   .footer-bottom{flex-direction:column;text-align:center;gap:.4rem}
-  #alerts{right:.75rem;left:.75rem;max-width:none}
+  #alerts{top:64px;right:.75rem;left:.75rem;max-width:none}
   .mob-nav{display:flex;position:fixed;bottom:0;left:0;right:0;height:60px;background:rgba(12,8,8,.97);border-top:1px solid var(--border);z-index:100;align-items:stretch;justify-content:space-around;backdrop-filter:blur(20px)}
   .mnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);font-size:.58rem;font-weight:600;gap:2px;cursor:pointer;padding:6px 2px;transition:color .2s;-webkit-tap-highlight-color:transparent;border:none;background:none}
   .mnav-item.active,.mnav-item:active{color:var(--red2)}
@@ -1346,8 +1347,12 @@ async function doReg(){
     const r=await req('POST','/api/auth/register',{username:u,email:e,password:p});
     token=r.token;localStorage.setItem('fdk_t',token);
     closeModal();
-    toast('s','🎉 Konto oprettet! Velkommen til FlirtDK.');
-    toast('w','📧 Tjek din e-mail ('+e+') for bekræftelse.',8000);
+    toast('s','🎉 Konto oprettet! Velkommen til FlirtDK.',6000);
+    if(r.emailSent){
+      toast('w','📧 Bekræftelsesmail sendt til '+e,8000);
+    }else{
+      toast('w','⚠️ Email kunne ikke sendes — kontakt support hvis du ikke kan logge ind.',8000);
+    }
     try{me=await req('GET','/api/auth/me');}catch{}
     setIn();goPage('dashboard');
   }catch(err){merr(err.message);}
