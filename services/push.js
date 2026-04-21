@@ -2,12 +2,17 @@ const db = require('../db');
 
 let webpush = null;
 if (process.env.VAPID_PUBLIC && process.env.VAPID_PRIVATE) {
-  webpush = require('web-push');
-  webpush.setVapidDetails(
-    `mailto:admin@flirtdk.dk`,
-    process.env.VAPID_PUBLIC,
-    process.env.VAPID_PRIVATE
-  );
+  try {
+    webpush = require('web-push');
+    webpush.setVapidDetails(
+      `mailto:admin@flirtdk.dk`,
+      process.env.VAPID_PUBLIC.replace(/=/g, ''),
+      process.env.VAPID_PRIVATE.replace(/=/g, '')
+    );
+  } catch (e) {
+    console.warn('Push-notifikationer deaktiveret:', e.message);
+    webpush = null;
+  }
 }
 
 async function pushToUser(userId, payload) {
