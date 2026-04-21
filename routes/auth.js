@@ -25,8 +25,9 @@ router.post('/register', async (req, res) => {
     ).run(username.trim(), email.toLowerCase().trim(), hash, verifyToken);
     const userId = result.lastInsertRowid;
     db.prepare('INSERT INTO profiles (user_id, display_name) VALUES (?, ?)').run(userId, username.trim());
-    try { await sendVerification(email, verifyToken); } catch (e) { console.warn('Mail fejl:', e.message); }
-    return res.status(201).json({ token: sign(userId), userId, message: 'Konto oprettet! Tjek din e-mail.' });
+    let emailSent = false;
+    try { await sendVerification(email, verifyToken); emailSent = true; } catch (e) { console.warn('Mail fejl:', e.message); }
+    return res.status(201).json({ token: sign(userId), userId, emailSent });
   } catch (err) {
     if (err.message.includes('UNIQUE'))
       return res.status(409).json({ error: 'Brugernavn eller e-mail er allerede i brug' });
