@@ -2,6 +2,7 @@ const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
 require('./db');
+const { seedBots, startBotActivity } = require('./bots');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -30,4 +31,8 @@ app.use('/api/push',     require('./routes/push'));
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-app.listen(PORT, () => console.log(`FlirtDK v2 korer pa http://localhost:${PORT}`));
+app.listen(PORT, async () => {
+  console.log(`FlirtDK v2 korer pa http://localhost:${PORT}`);
+  await seedBots();
+  startBotActivity();
+});
