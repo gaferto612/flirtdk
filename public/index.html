@@ -380,6 +380,7 @@ footer{border-top:1px solid var(--border);padding:3rem 2rem 2rem;background:var(
   body{padding-bottom:60px}
   nav{display:none}
   .header-right .btn-ghost{display:none}
+  .hdr-name,.hdr-minkonto,.hdr-msgs{display:none}
   header{padding:0 1rem;height:56px}
   .hero{padding:3rem 1rem 2rem;min-height:auto}
   .hero h1{font-size:clamp(1.9rem,9vw,3rem)}
@@ -643,8 +644,8 @@ footer{border-top:1px solid var(--border);padding:3rem 2rem 2rem;background:var(
           <p>Danmarks friskeste og mest diskrete mødested. Et moderne og sikkert sted for voksne at finde hinanden.</p>
         </div>
         <div class="footer-col"><h4>Platform</h4><a onclick="openModal('reg')">Opret profil</a><a onclick="openModal('login')">Log ind</a><a onclick="needLogin('browse')">Søg profiler</a><a onclick="needLogin('dashboard')">Premium</a></div>
-        <div class="footer-col"><h4>Hjælp</h4><a href="#">FAQ</a><a href="#">Kontakt</a><a href="#">Sikkerhed</a><a href="#">Anmeld bruger</a></div>
-        <div class="footer-col"><h4>Juridisk</h4><a href="#">Betingelser</a><a href="#">Privatlivspolitik</a><a href="#">Cookies</a><a href="#">GDPR</a></div>
+        <div class="footer-col"><h4>Hjælp</h4><a onclick="toast('w','Siden er under opbygning — kom tilbage snart!')">FAQ</a><a onclick="toast('w','Siden er under opbygning — kom tilbage snart!')">Kontakt</a><a onclick="toast('w','Siden er under opbygning — kom tilbage snart!')">Sikkerhed</a><a onclick="toast('w','Siden er under opbygning — kom tilbage snart!')">Anmeld bruger</a></div>
+        <div class="footer-col"><h4>Juridisk</h4><a onclick="toast('w','Siden er under opbygning — kom tilbage snart!')">Betingelser</a><a onclick="toast('w','Siden er under opbygning — kom tilbage snart!')">Privatlivspolitik</a><a onclick="toast('w','Siden er under opbygning — kom tilbage snart!')">Cookies</a><a onclick="toast('w','Siden er under opbygning — kom tilbage snart!')">GDPR</a></div>
       </div>
       <div class="footer-bottom">
         <span>© 2025 FlirtDK — Alle rettigheder forbeholdes</span>
@@ -855,10 +856,10 @@ function setIn(){
   document.getElementById('hdr-right').innerHTML=`
     <div style="display:flex;align-items:center;gap:8px;">
       <div style="width:34px;height:34px;border-radius:50%;background:var(--dark3);border:1px solid var(--border2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;" onclick="goPage('dashboard')">${me.photo?`<img src="${API}${me.photo}" style="width:100%;height:100%;object-fit:cover;">`:'👤'}</div>
-      <span style="color:var(--text2);font-size:.85rem;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${me.display_name||me.username}</span>
+      <span class="hdr-name" style="color:var(--text2);font-size:.85rem;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${me.display_name||me.username}</span>
     </div>
-    <button class="btn btn-ghost btn-sm" onclick="goPage('messages')">✉ Beskeder</button>
-    <button class="btn btn-red btn-sm" onclick="goPage('dashboard')">Min konto</button>`;
+    <button class="btn btn-ghost btn-sm hdr-msgs" onclick="goPage('messages')">✉ Beskeder</button>
+    <button class="btn btn-red btn-sm hdr-minkonto" onclick="goPage('dashboard')">Min konto</button>`;
   if(!me.verified)toast('w',`📧 Bekræft din e-mail for fuld adgang. <a href="#" onclick="resendV()" style="color:var(--gold);font-weight:700;">Send igen</a>`,10000);
   pollBadge();
 }
@@ -898,8 +899,8 @@ function dTab(id,btn){
 // ── CHAT RUM ──────────────────────────────────────────────────────────────
 function enterRoom(gender, online){
   if(!token){openModal('reg');return;}
-  if(gender)document.getElementById('b-gender').value=gender;
-  if(online)document.getElementById('b-online').checked=true;
+  document.getElementById('b-gender').value=gender||'';
+  document.getElementById('b-online').checked=!!online;
   goPage('browse');
 }
 
@@ -941,13 +942,18 @@ async function loadVisitors(){
 
 // ── HOME ─────────────────────────────────────────────────────────────────
 async function loadHome(){
-  const[on,all]=await Promise.all([req('GET','/api/profiles?online=1&limit=4'),req('GET','/api/profiles?limit=4')]);
-  document.getElementById('live-cnt').textContent=on.total||0;
-  document.getElementById('s-online').textContent=on.total||0;
-  document.getElementById('s-total').textContent=(all.total||0).toLocaleString('da-DK');
-  document.getElementById('g-online').innerHTML=on.profiles.length?on.profiles.map(pcard).join(''):empty('Ingen online nu');
-  document.getElementById('g-new').innerHTML=all.profiles.length?all.profiles.map(pcard).join(''):empty('Ingen profiler endnu');
-  loadRoomCounts();
+  try{
+    const[on,all]=await Promise.all([req('GET','/api/profiles?online=1&limit=4'),req('GET','/api/profiles?limit=4')]);
+    document.getElementById('live-cnt').textContent=on.total||0;
+    document.getElementById('s-online').textContent=on.total||0;
+    document.getElementById('s-total').textContent=(all.total||0).toLocaleString('da-DK');
+    document.getElementById('g-online').innerHTML=on.profiles.length?on.profiles.map(pcard).join(''):empty('Ingen online nu');
+    document.getElementById('g-new').innerHTML=all.profiles.length?all.profiles.map(pcard).join(''):empty('Ingen profiler endnu');
+    loadRoomCounts();
+  }catch{
+    document.getElementById('g-online').innerHTML=empty('Kunne ikke hente profiler');
+    document.getElementById('g-new').innerHTML=empty('Kunne ikke hente profiler');
+  }
 }
 function doSearch(){
   if(!token){openModal('reg');return;}
@@ -963,8 +969,10 @@ async function loadBrowse(){
   let qs='/api/profiles?limit=24';
   if(g)qs+='&gender='+g;if(c)qs+='&city='+encodeURIComponent(c);if(o)qs+='&online='+o;
   document.getElementById('g-browse').innerHTML='<div class="spin-wrap"><div class="spin"></div></div>';
-  const r=await req('GET',qs);
-  document.getElementById('g-browse').innerHTML=r.profiles.length?r.profiles.map(pcard).join(''):empty('Ingen profiler fundet — prøv andre filtre');
+  try{
+    const r=await req('GET',qs);
+    document.getElementById('g-browse').innerHTML=r.profiles.length?r.profiles.map(pcard).join(''):empty('Ingen profiler fundet — prøv andre filtre');
+  }catch{document.getElementById('g-browse').innerHTML=empty('Kunne ikke hente profiler — prøv igen');}
 }
 
 // ── PROFILE CARD ──────────────────────────────────────────────────────────
@@ -1023,6 +1031,7 @@ async function viewProfile(id){
 // ── MESSAGES ─────────────────────────────────────────────────────────────
 function startChat(id,name){
   if(!token){openModal('reg');return;}
+  closeModal();
   chatWith=id;
   document.getElementById('chat-name').textContent=name;
   document.getElementById('chat-status').textContent='';
