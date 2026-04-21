@@ -422,8 +422,8 @@ footer{border-top:1px solid var(--border);padding:3rem 2rem 2rem;background:var(
   .dcard{padding:1.4rem;max-width:100%}
   .row2{grid-template-columns:1fr}
   .plans-row{grid-template-columns:1fr}
-  .mbox{padding:1.8rem 1.4rem;border-radius:20px 20px 0 0;position:fixed;bottom:0;left:0;right:0;max-width:100%;width:100%;max-height:90vh;border-left:none;border-right:none;border-bottom:none}
-  .mo.open{align-items:flex-end}
+  .mbox{padding:2rem 1.4rem 4rem;border-radius:0;position:fixed;inset:0;max-width:100%;width:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;border:none;max-height:100%}
+  .mo.open{align-items:flex-start}
   footer{padding:2rem 1rem 1.5rem}
   .footer-top{grid-template-columns:1fr 1fr;gap:1.5rem}
   .footer-brand{grid-column:1/-1}
@@ -1277,21 +1277,89 @@ function b64(s){const p='='.repeat((4-s.length%4)%4);const b=(s+p).replace(/-/g,
 // ── AUTH MODALS ───────────────────────────────────────────────────────────
 function openModal(t){
   const b=document.getElementById('mbody');
-  if(t==='login'){b.innerHTML=`<h3>Velkommen tilbage</h3><p class="msub">Log ind på din FlirtDK-konto</p><div id="merr" class="merr"></div><div class="fg"><label>E-mail</label><input id="m-e" type="email" placeholder="din@email.dk" autofocus></div><div class="fg"><label>Adgangskode</label><input id="m-p" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div><button class="btn btn-red btn-full" onclick="doLogin()">Log ind</button><p class="mfoot">Ingen konto? <a onclick="openModal('reg')">Opret gratis →</a></p>`;}
-  else{b.innerHTML=`<h3>Opret gratis profil</h3><p class="msub">Helt gratis · Diskret · Ingen binding</p><div id="merr" class="merr"></div><div class="fg"><label>Brugernavn</label><input id="m-u" type="text" placeholder="Vælg et brugernavn" autofocus></div><div class="fg"><label>E-mail</label><input id="m-e" type="email" placeholder="din@email.dk"></div><div class="fg"><label>Adgangskode</label><input id="m-p" type="password" placeholder="Mindst 6 tegn" onkeydown="if(event.key==='Enter')doReg()"></div><button class="btn btn-red btn-full" onclick="doReg()">Opret profil gratis →</button><p class="mfoot">Allerede medlem? <a onclick="openModal('login')">Log ind her</a></p>`;}
+  if(t==='login'){b.innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;">
+      <div class="logo-icon" style="width:36px;height:36px;font-size:1.1rem;">🔥</div>
+      <span style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;">FlirtDK</span>
+    </div>
+    <h3>Velkommen tilbage</h3><p class="msub">Log ind på din FlirtDK-konto</p>
+    <div id="merr" class="merr"></div>
+    <div class="fg"><label>E-mail</label><input id="m-e" type="email" inputmode="email" autocomplete="email" placeholder="din@email.dk"></div>
+    <div class="fg"><label>Adgangskode</label><input id="m-p" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-red btn-full" id="auth-btn" onclick="doLogin()">Log ind</button>
+    <p class="mfoot">Ingen konto? <a onclick="openModal('reg')">Opret gratis →</a></p>`;}
+  else{b.innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;">
+      <div class="logo-icon" style="width:36px;height:36px;font-size:1.1rem;">🔥</div>
+      <span style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;">FlirtDK</span>
+    </div>
+    <h3>Opret gratis profil</h3><p class="msub">Helt gratis · Diskret · Ingen binding</p>
+    <div id="merr" class="merr"></div>
+    <div class="fg"><label>Brugernavn</label><input id="m-u" type="text" autocomplete="username" placeholder="Vælg et brugernavn"></div>
+    <div class="fg"><label>E-mail</label><input id="m-e" type="email" inputmode="email" autocomplete="email" placeholder="din@email.dk"></div>
+    <div class="fg"><label>Adgangskode</label><input id="m-p" type="password" autocomplete="new-password" placeholder="Mindst 6 tegn" onkeydown="if(event.key==='Enter')doReg()"></div>
+    <button class="btn btn-red btn-full" id="auth-btn" onclick="doReg()">Opret profil gratis →</button>
+    <p class="mfoot">Allerede medlem? <a onclick="openModal('login')">Log ind her</a></p>`;}
   document.getElementById('modal').classList.add('open');
+  setTimeout(()=>{const first=b.querySelector('input');if(first)first.focus();},100);
 }
 function openRawModal(){document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
-function merr(m){const e=document.getElementById('merr');e.textContent=m;e.style.display='';}
+function merr(m){
+  const e=document.getElementById('merr');
+  if(e){e.textContent=m;e.style.display='';}
+  const btn=document.getElementById('auth-btn');
+  if(btn){btn.disabled=false;btn.innerHTML=btn.dataset.orig||btn.innerHTML;}
+}
+
+function setBtnLoading(text){
+  const btn=document.getElementById('auth-btn');
+  if(!btn)return;
+  btn.dataset.orig=btn.innerHTML;
+  btn.disabled=true;
+  btn.innerHTML=`<span class="spin" style="width:16px;height:16px;border-width:2px;display:inline-block;margin-right:8px;vertical-align:middle;"></span>${text}`;
+}
 
 async function doLogin(){
-  try{const r=await req('POST','/api/auth/login',{email:document.getElementById('m-e').value,password:document.getElementById('m-p').value});token=r.token;localStorage.setItem('fdk_t',token);me=await req('GET','/api/auth/me');setIn();closeModal();goPage('dashboard');}catch(e){merr(e.message);}
+  const e=document.getElementById('m-e')?.value?.trim();
+  const p=document.getElementById('m-p')?.value;
+  if(!e||!p){merr('Udfyld e-mail og adgangskode');return;}
+  setBtnLoading('Logger ind...');
+  try{
+    const r=await req('POST','/api/auth/login',{email:e,password:p});
+    token=r.token;localStorage.setItem('fdk_t',token);
+    closeModal();
+    toast('s','✓ Du er nu logget ind!');
+    try{me=await req('GET','/api/auth/me');}catch{}
+    setIn();goPage('dashboard');
+  }catch(err){merr(err.message);}
 }
+
 async function doReg(){
-  try{const r=await req('POST','/api/auth/register',{username:document.getElementById('m-u').value,email:document.getElementById('m-e').value,password:document.getElementById('m-p').value});token=r.token;localStorage.setItem('fdk_t',token);me=await req('GET','/api/auth/me');setIn();closeModal();goPage('dashboard');}catch(e){merr(e.message);}
+  const u=document.getElementById('m-u')?.value?.trim();
+  const e=document.getElementById('m-e')?.value?.trim();
+  const p=document.getElementById('m-p')?.value;
+  if(!u||!e||!p){merr('Udfyld alle felter');return;}
+  if(p.length<6){merr('Adgangskode skal være mindst 6 tegn');return;}
+  setBtnLoading('Opretter konto...');
+  try{
+    const r=await req('POST','/api/auth/register',{username:u,email:e,password:p});
+    token=r.token;localStorage.setItem('fdk_t',token);
+    closeModal();
+    toast('s','🎉 Konto oprettet! Velkommen til FlirtDK.');
+    toast('w','📧 Tjek din e-mail ('+e+') for bekræftelse.',8000);
+    try{me=await req('GET','/api/auth/me');}catch{}
+    setIn();goPage('dashboard');
+  }catch(err){merr(err.message);}
 }
 async function doLogout(){try{await req('POST','/api/auth/logout');}catch{}token=null;me=null;localStorage.removeItem('fdk_t');document.getElementById('hdr-right').innerHTML=`<button class="btn btn-ghost btn-sm" onclick="openModal('login')">Log ind</button><button class="btn btn-red btn-sm" onclick="openModal('reg')">Opret gratis profil</button>`;goPage('home');}
+
+// Scroll aktiv input i sigte når tastatur åbner på mobil
+document.addEventListener('focusin',function(e){
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'){
+    setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),320);
+  }
+});
 
 boot();
 </script>
